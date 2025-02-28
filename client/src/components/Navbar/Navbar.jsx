@@ -60,6 +60,7 @@ const Navbar = () => {
               className="mt-4 text-3xl hover:text-blue-500 transition-all duration-300"
               key={index}
               to={items.to}
+              onClick={() => setMobileNav(!MobileNav)}
             >
               {items.name}
             </Link>
