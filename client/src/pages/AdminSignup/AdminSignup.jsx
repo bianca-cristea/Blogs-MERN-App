@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-const Login = () => {
+const AdminSignup = () => {
   const [inputs, setInputs] = useState({
     username: "",
     email: "",
@@ -16,11 +16,22 @@ const Login = () => {
   return (
     <div className="h-screen flex items-center justify-center">
       <div className="p-12 shadow-2xl rounded w-80% md:w-[60%] lg:w-[40%] flex flex-col items-center justify-center">
-        <div className="text-2xl flex flex-col lg:flex-row gap-2">
+        <div className="text-2xl flex gap-2 flex-col lg:flex-row">
           <h1 className="font-bold">Welcome</h1>
-          <span>Login</span>
+          <span>Signup as a new user</span>
         </div>
         <form action="" className="flex flex-col w-[100%] mt-8">
+          <div className="flex flex-col mb-4">
+            <label>Username</label>
+            <input
+              type="text"
+              value={inputs.username}
+              name="username"
+              className="mt-2 outline-none border px-3 py-2 rounded border-zinc-400"
+              required
+              onChange={change}
+            />
+          </div>
           <div className="flex flex-col mb-4">
             <label>Email</label>
             <input
@@ -45,17 +56,17 @@ const Login = () => {
           </div>
           <div className="flex mt-4">
             <button className="bg-blue-600 hover:bg-blue-700 transition-all duration-300 text-white px-4 py-2 rounded w-[100%]">
-              Login
+              Signup
             </button>
           </div>
         </form>
         <h4 className="mt-8">
-          Don't have an accout?
+          Already have an accout?
           <Link
-            to="/signup"
+            to="/login"
             className="text-blue-600 hover:text-blue-700 hover:font-semibold"
           >
-            Signup
+            Login
           </Link>
         </h4>
       </div>
@@ -63,4 +74,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default AdminSignup;
