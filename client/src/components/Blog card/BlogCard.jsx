@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const BlogCard = ({ item }) => {
+const BlogCard = ({ item, idx }) => {
   return (
     <>
       <div className="w-full lg:w-4/6">
@@ -10,7 +10,10 @@ const BlogCard = ({ item }) => {
       <div className="w-full lg:w-4/6">
         <h1 className="text-2xl font-semibold ">{item.title}</h1>
         <p className="mb-4">{item.description.slice(0, 170)}...</p>
-        <Link className="bg-blue-600 px-4 py-2 hover:bg-blue-700 rounded transition-all duration-300 text-white">
+        <Link
+          to={`/description/${idx}`}
+          className="bg-blue-600 px-4 py-2 hover:bg-blue-700 rounded transition-all duration-300 text-white"
+        >
           Read More
         </Link>
       </div>

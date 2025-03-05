@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 
-const AdminLayout = () => {
+const OtherLayout = () => {
   return (
     <div>
       <Outlet />
@@ -9,4 +9,4 @@ const AdminLayout = () => {
   );
 };
 
-export default AdminLayout;
+export default OtherLayout;

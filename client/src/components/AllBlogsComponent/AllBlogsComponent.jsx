@@ -1,7 +1,7 @@
 import React from "react";
-import BlogCard from "../../components/Blog card/BlogCard";
+import BlogCard from "../Blog card/BlogCard";
 
-const RecentBlogs = () => {
+const AllBlogsComponent = () => {
   const data = [
     {
       img: "https://revenuearchitects.com/wp-content/uploads/2017/02/Blog_pic-1030x584.png",
@@ -23,18 +23,15 @@ const RecentBlogs = () => {
     },
   ];
   return (
-    <div className="mb-4 py-4">
-      <h1 className="text-xl font-semibold mb-4">Recent blogs</h1>
-      <div className="flex flex-col gap-8 lg:gap-4">
-        {data &&
-          data.map((item, idx) => (
-            <div key={idx} className="flex flex-col lg:flex-row gap-2 lg:gap-4">
-              <BlogCard item={item} idx={idx} />
-            </div>
-          ))}
-      </div>
+    <div className="flex flex-col gap-8 lg:gap-4">
+      {data &&
+        data.map((item, idx) => (
+          <div key={idx} className="flex flex-col lg:flex-row gap-2 lg:gap-4">
+            <BlogCard item={item} idx={idx} />
+          </div>
+        ))}
     </div>
   );
 };
 
-export default RecentBlogs;
+export default AllBlogsComponent;
