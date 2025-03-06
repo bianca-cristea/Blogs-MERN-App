@@ -1,5 +1,6 @@
 import User from "../models/user.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export const signup = async (req, res) => {
   try {
@@ -38,8 +39,44 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const existingUser = await User.findOne({ email });
+
+    if (!existingUser) {
+      return res.status(400).json({ message: "Invalid credentials" }); // Utilizatorul nu a fost găsit
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(
+      password,
+      existingUser.password
+    );
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ message: "Invalid credentials" }); // Parola incorectă
+    }
+
+    const token = jwt.sign(
+      {
+        id: existingUser._id,
+        email: existingUser.email,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "15d" }
+    );
+
+    res.cookie("blogsApp", token, {
+      httpOnly: true,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "None",
+    });
+
+    res.status(200).json({ message: "Login successful" });
   } catch (error) {
-    console.log("Error in signup controller", error.message);
+    console.log("Error in login controller", error.message);
     res.status(500).json({ message: "Internal server error" });
   }
 };
