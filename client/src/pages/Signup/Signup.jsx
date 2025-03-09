@@ -1,7 +1,12 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 
 const Signup = () => {
+  const navigateTo = useNavigate();
+  const backendLink = useSelector((state) => state.prod.link);
   const [inputs, setInputs] = useState({
     username: "",
     email: "",
@@ -12,6 +17,24 @@ const Signup = () => {
     const { name, value } = e.target;
     setInputs({ ...inputs, [name]: value });
   };
+  const SubmitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(`${backendLink}/api/user/signup`, inputs, {
+        withCredentials: true,
+      });
+      toast.success(res.data.message);
+      navigateTo("/profile");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong");
+    } finally {
+      setInputs({
+        username: "",
+        email: "",
+        password: "",
+      });
+    }
+  };
 
   return (
     <div className="h-screen flex items-center justify-center">
@@ -20,7 +43,11 @@ const Signup = () => {
           <h1 className="font-bold">Welcome</h1>
           <span>Signup as a new user</span>
         </div>
-        <form action="" className="flex flex-col w-[100%] mt-8">
+        <form
+          action=""
+          onSubmit={SubmitHandler}
+          className="flex flex-col w-[100%] mt-8"
+        >
           <div className="flex flex-col mb-4">
             <label>Username</label>
             <input
@@ -61,7 +88,7 @@ const Signup = () => {
           </div>
         </form>
         <h4 className="mt-8">
-          Already have an accout?
+          Already have an account?
           <Link
             to="/login"
             className="text-blue-600 hover:text-blue-700 hover:font-semibold"

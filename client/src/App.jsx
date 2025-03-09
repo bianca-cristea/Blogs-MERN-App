@@ -19,10 +19,13 @@ import AdminSignup from "./pages/AdminSignup/AdminSignup";
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 import AdminDashboardComp from "./components/Admin Components/AdminDashboardComp";
 import UpdateBlog from "./components/Admin Components/Compo/UpdateBlog";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 const App = () => {
   return (
-    <Router>
+    <>
+      <ToastContainer />
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index path="/" element={<Home />} />
@@ -48,7 +51,7 @@ const App = () => {
           </Route>
         </Route>
       </Routes>
-    </Router>
+    </>
   );
 };
 

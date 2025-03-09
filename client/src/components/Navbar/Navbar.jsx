@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { IoReorderThreeSharp } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
   const [MobileNav, setMobileNav] = useState(false);
@@ -12,6 +13,12 @@ const Navbar = () => {
     { name: "Profile", to: "/profile" },
     { name: "Login", to: "/login" },
   ];
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  if (!isLoggedIn) {
+    links.splice(2, 1);
+  } else {
+    links.splice(3, 1);
+  }
   return (
     <nav className="flex relative items-center justify-between py-4 border-b border-zinc-200">
       <div className="w-3/6 brandName">
@@ -29,12 +36,14 @@ const Navbar = () => {
             {items.name}
           </Link>
         ))}
-        <Link
-          to="/signup"
-          className="ms-4 bg-black hover:bg-blue-600 rounded px-4 py-2 text-zinc-100"
-        >
-          Signup
-        </Link>
+        {!isLoggedIn && (
+          <Link
+            to="/signup"
+            className="ms-4 bg-black hover:bg-blue-600 rounded px-4 py-2 text-zinc-100"
+          >
+            Signup
+          </Link>
+        )}
       </div>
       <div className="w-3/6 flex lg:hidden items-center justify-end">
         <button className="text-4xl" onClick={() => setMobileNav(!MobileNav)}>
@@ -65,12 +74,14 @@ const Navbar = () => {
               {items.name}
             </Link>
           ))}
-          <Link
-            to="/signup"
-            className="mt-4 text-3xl bg-black hover:bg-blue-600 transition-all duration-200 rounded px-4 py-2 text-zinc-100"
-          >
-            Signup
-          </Link>
+          {!isLoggedIn && (
+            <Link
+              to="/signup"
+              className="ms-4 bg-black hover:bg-blue-600 rounded px-4 py-2 text-zinc-100"
+            >
+              Signup
+            </Link>
+          )}
         </div>
       </div>
     </nav>

@@ -1,38 +1,47 @@
 import User from "../models/user.js";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import generateToken from "../utils/token.js ";
 
 export const signup = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    if (!username || !email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
+    const user = await User.findOne({ username });
+
+    if (user) {
+      return res.status(400).json({
+        error: "Username already exists.",
+      });
     }
 
-    if (password.length < 6) {
-      res
-        .status(400)
-        .json({ message: "Password must be at least 6 characters long" });
-    }
-
-    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
-
-    if (existingUser) {
-      return res
-        .status(400)
-        .json({ message: "Username and mail already exist" });
+    if (email === "" || username === "" || password === "") {
+      return res.status(401).json({
+        error: "Not all required fields are filled.",
+      });
     }
 
     const salt = await bcrypt.genSalt(10);
-    const hashedPasword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = new User({ username, email, password: hashedPasword });
-    await newUser.save();
-    res.status(201).json({ message: "User created successfully" });
+    const newUser = new User({
+      username,
+      password: hashedPassword,
+    });
+
+    if (newUser) {
+      generateToken(newUser._id, res);
+      await newUser.save();
+      res.status(201).json({
+        _id: newUser._id,
+        email: newUser.fullName,
+        username: newUser.username,
+      });
+    } else {
+      res.status(400).json({ error: "Invalid data" });
+    }
   } catch (error) {
-    console.log("Error in signup controller", error.message);
-    res.status(500).json({ message: "Internal server error" });
+    console.log("Error in register controller", error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -40,51 +49,41 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
+    if (!email || !password)
+      return res
+        .status(400)
+        .json({ error: "Username and password are required." });
 
-    const existingUser = await User.findOne({ email });
-
-    if (!existingUser) {
-      return res.status(400).json({ message: "Invalid credentials" }); // Utilizatorul nu a fost găsit
-    }
+    const user = await User.findOne({ email });
 
     const isPasswordCorrect = await bcrypt.compare(
       password,
-      existingUser.password
+      user?.password || ""
     );
-    if (!isPasswordCorrect) {
-      return res.status(400).json({ message: "Invalid credentials" }); // Parola incorectă
+
+    if (!user || !isPasswordCorrect) {
+      return res.status(400).json({
+        error: "Wrong credentials",
+      });
     }
 
-    const token = jwt.sign(
-      {
-        id: existingUser._id,
-        email: existingUser.email,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "15d" }
-    );
-
-    res.cookie("blogsApp", token, {
-      httpOnly: true,
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "None",
-    });
+    generateToken(user._id, res);
 
     res.status(200).json({ message: "Login successful" });
   } catch (error) {
     console.log("Error in login controller", error.message);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ error: error.message });
   }
 };
 
-export const logout = async (req, res) => {
+export const logout = (req, res) => {
   try {
+    res.clearCookie("token");
+    return res.status(200).json({
+      message: "Logout succesful",
+    });
   } catch (error) {
-    console.log("Error in signup controller", error.message);
-    res.status(500).json({ message: "Internal server error" });
+    console.log("Error in logout controller", error.message);
+    res.status(400).json({ error: "Server error" });
   }
 };
